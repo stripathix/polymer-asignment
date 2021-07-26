@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #charactermap {
+        font-family: Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+      }
+
+      #charactermap td,
+      #charactermap th {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+
+      #charactermap tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+
+      #charactermap tr:hover {
+        background-color: #ddd;
+      }
+
+      #charactermap th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #04aa6d;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>Request Processed: <span id="requestCount">0</span></h3>
+    <div id="metrics">
+      <h3>Server Metrices</h3>
+    </div>
+    <div id="output">
+      <h3>Data</h3>
+    </div>
+    <script>
+      const totalRequestToMake = 50;
+      const getDatFromServer = (i) => {
+        fetch('http://localhost:3000/getData')
+          .then((data) => data.json())
+          .then((res) => {
+            document.querySelector('#requestCount').innerHTML = i;
+            if (i === totalRequestToMake) {
+              var div = document.createElement('div');
+              div.innerHTML += 'Data: ' + res.data;
+              document.querySelector('#output').appendChild(div);
+
+              var metricesDiv = document.createElement('div');
+              let metricesHtml = '<div>';
+              metricesHtml +=
+                'Total request received at server: ' +
+                res.serverMetrics.totalRequestReceived;
+              metricesHtml += '<br/>';
+              metricesHtml += 'Total retries: ' + res.serverMetrics.retries;
+              metricesHtml += '<br/>';
+              metricesHtml +=
+                'Total characters received at server: ' +
+                res.serverMetrics.totalCharactersReceivedAtServer;
+              metricesHtml += '<br/>';
+              metricesHtml +=
+                'Min Execution time at server in (milliseconds): ' +
+                res.serverMetrics.minExecutionTimeAtServer;
+              metricesHtml += '<br/>';
+              metricesHtml +=
+                'Max Execution time at server (milliseconds): ' +
+                res.serverMetrics.maxExecutionTimeAtServer;
+              metricesHtml += '<br/>';
+              metricesHtml +=
+                'Average Execution time at server (milliseconds): ' +
+                res.serverMetrics.averageExecutionTime;
+              metricesHtml += '<br/>';
+              metricesHtml += '</div>';
+              metricesHtml += '<h4>Each Character count</h4>';
+              metricesHtml += '<table id="charactermap">';
+              metricesHtml += '<thead><th>Character</th><th>Count</th><thead>';
+              Object.keys(res.serverMetrics.charactersMap).forEach(
+                (char, i) => {
+                  metricesHtml += `<tr><td>${char}</td><td>${res.serverMetrics.charactersMap[char]}</td></tr>`;
+                }
+              );
+              metricesHtml += '</table>';
+              metricesDiv.innerHTML = metricesHtml;
+              document.querySelector('#metrics').appendChild(metricesDiv);
+            }
+          });
+      };
+
+      const init = () => {
+        for (let i = 1; i <= totalRequestToMake; i++) {
+          getDatFromServer(i);
+        }
+      };
+      init();
+    </script>
+  </body>
+</html>
