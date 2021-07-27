@@ -45,7 +45,7 @@
     <script>
       const totalRequestToMake = 50;
       const getDatFromServer = (i) => {
-        fetch('http://localhost:3000/getData')
+        fetch('/getData')
           .then((data) => data.json())
           .then((res) => {
             document.querySelector('#requestCount').innerHTML = i;
