@@ -11,7 +11,6 @@ const {
 } = require('./metrices');
 
 const app = express();
-const port = 3000;
 app.use(cors());
 
 // serve your css as static
@@ -42,6 +41,9 @@ app.get('/getData', async (req, res) => {
   processDataForMetrics(data);
   res.send({ data, serverMetrics: getServerMetrics() });
 });
+
+
+const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
